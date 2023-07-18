@@ -17,11 +17,11 @@ export class UsersService {
     return await this.userRepository.find();
   }
 
-  async findOne(name: string) {
+  async findOne(email: string) {
     const User = await this.userRepository.findOne(
       {
         where:{
-          name:name
+          email:email
         }
       }
     );

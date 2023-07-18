@@ -25,13 +25,17 @@
     "m:create": "npm run typeorm:init migration:create"
   },
   "dependencies": {
-    "@nestjs/common": "^9.0.0",
+    "@nestjs/common": "^9.4.3",
     "@nestjs/config": "^3.0.0",
     "@nestjs/core": "^9.0.0",
     "@nestjs/jwt": "^10.1.0",
     "@nestjs/mapped-types": "*",
-    "@nestjs/platform-express": "^9.0.0",
+    "@nestjs/platform-express": "^9.4.3",
     "@nestjs/typeorm": "^10.0.0",
+    "@types/multer": "^1.4.7",
+    "csv-parser": "^3.0.0",
+    "fs": "^0.0.1-security",
+    "multer": "^1.4.5-lts.1",
     "pg": "^8.11.0",
     "postgres": "^3.3.5",
     "reflect-metadata": "^0.1.13",
@@ -39,7 +43,7 @@
     "typeorm": "^0.3.17"
   },
   "devDependencies": {
-    "@nestjs/cli": "^9.0.0",
+    "@nestjs/cli": "^10.1.9",
     "@nestjs/schematics": "^9.0.0",
     "@nestjs/testing": "^9.0.0",
     "@types/express": "^4.17.13",

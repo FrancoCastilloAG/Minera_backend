@@ -9,10 +9,13 @@ export class User {
     id: string;
 
     @Column()
-    name:string;
+    email:string;
     
     @Column()
     password:string;
+
+    @Column()
+    role:string;
 
     validatePassword(password:string):boolean{
         return this.password === password;
@@ -20,7 +23,8 @@ export class User {
     getInfoToken(){
         return {
             id: this.id,
-            name: this.name
+            email: this.email,
+            role: this.role
         }
     }
 }

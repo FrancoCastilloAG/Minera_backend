@@ -17,7 +17,7 @@ export class UsersController {
   }
 
   @Get(':id')
-  async findOne(@Param('name') name: string) {
-    return await this.usersService.findOne(name);
+  async findOne(@Param('email') email: string) {
+    return await this.usersService.findOne(email);
   } 
 }

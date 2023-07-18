@@ -14,7 +14,7 @@ export class AuthService {
         async login(UserLoginDto: UserLoginDto) {
             console.log("UserLoginDto:", UserLoginDto);
           
-            const User = await this.userService.findOne(UserLoginDto.name);
+            const User = await this.userService.findOne(UserLoginDto.email);
             console.log("User:", User);
           
             if (!User) {
@@ -41,11 +41,11 @@ export class AuthService {
           
     async register(CreateUserDto: CreateUserDto) {
         // Verificar si el usuario ya existe en la base de datos
-        const existingUser = await this.userService.findOne(CreateUserDto.name);
+        const existingUser = await this.userService.findOne(CreateUserDto.email);
         if (existingUser) {
           return null; // Usuario ya existe, devolver nulo o algún mensaje de error
         }
-      
+        CreateUserDto.role = 'user';
         // Crear un nuevo usuario usando los datos del DTO
         const newUser = await this.userService.create(CreateUserDto);
       
