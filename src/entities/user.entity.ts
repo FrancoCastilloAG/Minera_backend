@@ -7,14 +7,20 @@ export class User {
     
     @PrimaryGeneratedColumn('uuid')
     id: string;
+    
+    @Column({ type: 'text' })
+    nombre:string;
+    
+    @Column({ type: 'text' })
+    rut:string;
 
-    @Column()
+    @Column({ type: 'text' })
     email:string;
     
-    @Column()
+    @Column({ type: 'text' })
     password:string;
 
-    @Column()
+    @Column({ type: 'text' })
     role:string;
 
     validatePassword(password:string):boolean{

@@ -4,6 +4,7 @@ import { Repository, EntityManager } from 'typeorm';
 import { CsvDto } from './dto/create_csv.dto';
 import { Csv } from 'src/entities/csv.entity';
 import * as csvParser from 'csv-parser';
+import { getManager } from 'typeorm';
 
 @Injectable()
 export class CsvService {
@@ -58,7 +59,8 @@ export class CsvService {
   
         await this.csvRepository.save(entidad);
       }
-  
+      this.entityManager.query(`alter table csv alter column "Fecha" type date using "Fecha"::date;`)
+      this.entityManager.query(`alter table csv alter column "Fecha" type text using "Fecha"::text;`)
       this.logger.log('Datos del CSV cargados exitosamente');
     } catch (error) {
       this.logger.error('Error al cargar datos desde el CSV:', error);
@@ -70,15 +72,132 @@ export class CsvService {
     return this.csvRepository.find();
   }
 
-  async showSemanalMovil(nombreFase: string, nombreRajo: string, fecha: string): Promise<number> {
+  async showSemanalMovil(nombre_fase: string, nombre_rajo: string, fecha: string): Promise<number> {
     try {
       const result = await this.entityManager.query(
-        'SELECT showSemanal_movil($1, $2, $3) as tonelaje_total',
-        [nombreFase, nombreRajo, fecha],
+        `SELECT semanal_movil from showSemanal_movil($1, $2, $3)`,
+        [nombre_fase, nombre_rajo, fecha],
       );
-      return parseInt(result[0].tonelaje_total, 10);
+      return result;
     } catch (error) {
       this.logger.error('Error al ejecutar showSemanal_movil:', error);
+      throw error;
+    }
+  }
+  async showMensual(nombre_fase: string, nombre_rajo: string, fecha: string): Promise<number> {
+    try {
+      const result = await this.entityManager.query(
+        `SELECT tonelaje_total from showMensual($1, $2, $3)`,
+        [nombre_fase, nombre_rajo, fecha],
+      );
+      return result;
+    } catch (error) {
+      this.logger.error('Error al ejecutar showMensual:', error);
+      throw error;
+    }
+  }
+  async showSemanalIso(nombre_fase: string, nombre_rajo: string, fecha: string): Promise<number> {
+    try {
+      const result = await this.entityManager.query(
+        `SELECT semanal from showSemanal_iso($1, $2, $3)`,
+        [nombre_fase, nombre_rajo, fecha],
+      );
+      return result;
+    } catch (error) {
+      this.logger.error('Error al ejecutar showSemanal_iso:', error);
+      throw error;
+    }
+  }
+  async showDiario(nombre_fase: string, nombre_rajo: string, fecha: string): Promise<number> {
+    try {
+      const result = await this.entityManager.query(
+        `SELECT diario from showDiario($1, $2, $3)`,
+        [nombre_fase, nombre_rajo, fecha],
+      );
+      return result;
+    } catch (error) {
+      this.logger.error('Error al ejecutar showDiario:', error);
+      throw error;
+    }
+  }
+  async getFilteredReportRajo(): Promise<{ rajo: string; fase: string }[]> {
+    try {
+      const result = await this.entityManager.query(`
+        SELECT rajo, zona FROM filtro_reportes_rajo()
+      `);
+      return result;
+    } catch (error) {
+      this.logger.error('Error al ejecutar filtro_reportes_rajo:', error);
+      throw error;
+    }
+  }
+  async getFilteredReportFase(): Promise<{ rajo: string; fase: string }[]> {
+    try {
+      const result = await this.entityManager.query(`
+        SELECT rajo, zona FROM filtro_reportes_fase()
+      `);
+      return result;
+    } catch (error) {
+      this.logger.error('Error al ejecutar filtro_reportes_fase:', error);
+      throw error;
+    }
+  }
+  async searchReportes(filterParameter: string): Promise<{ rajo: string; fase: string }[]> {
+    try {
+      const result = await this.entityManager.query(`
+        SELECT rajo, fase FROM busquedaReportes($1)
+      `, [filterParameter]);
+      return result;
+    } catch (error) {
+      this.logger.error('Error al ejecutar busquedaReportes:', error);
+      throw error;
+    }
+  }
+  async searchProduccion(filterParameter: string): Promise<any[]> {
+    try {
+      const result = await this.entityManager.query(`
+        SELECT fecha, carguio, camion, flota, material, fase, destino, tonelaje, ciclos, rajo 
+        FROM busquedaProduccion($1)
+      `, [filterParameter]);
+      return result;
+    } catch (error) {
+      this.logger.error('Error al ejecutar busquedaProduccion:', error);
+      throw error;
+    }
+  }
+  async getFilteredProduccionMaterial(): Promise<any[]> {
+    try {
+      const result = await this.entityManager.query(`
+        SELECT fecha, carguio, camion, flota, material, fase, destino, tonelaje, ciclos, rajo 
+        FROM filtro_produccion_material()
+      `);
+      return result;
+    } catch (error) {
+      this.logger.error('Error al ejecutar filtro_produccion_material:', error);
+      throw error;
+    }
+  }
+  async getFilteredProduccionFase(): Promise<any[]> {
+    try {
+      const result = await this.entityManager.query(`
+        SELECT fecha, carguio, camion, flota, material, fase, destino, tonelaje, ciclos, rajo 
+        FROM filtro_produccion_fase()
+      `);
+      return result;
+    } catch (error) {
+      this.logger.error('Error al ejecutar filtro_produccion_fase:', error);
+      throw error;
+    }
+  }
+  async getFilteredProduccionFecha(filterParameter: string): Promise<any[]> {
+    try {
+      const result = await this.entityManager.query(`
+        SELECT fecha, carguio, camion, flota, material, fase, destino, tonelaje, ciclos, rajo 
+        FROM filtro_produccion_fecha($1)
+      `, [filterParameter]);
+      return result;
+    } catch (error) {
+      this.logger.error('Error al ejecutar filtro_produccion_fecha:', error);
       throw error;
     }
   }
