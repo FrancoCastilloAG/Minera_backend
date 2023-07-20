@@ -1,4 +1,4 @@
-import { Controller, Post, UploadedFile, UseInterceptors, BadRequestException, Get,Query} from '@nestjs/common';
+import { Controller, Post, UploadedFile, UseInterceptors, BadRequestException, Get,Query ,Delete ,Put} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CsvService } from './csv.service';
 import {Csv} from "src/entities/csv.entity"
@@ -89,5 +89,59 @@ export class CsvController {
     @Query('filter_parameter') filterParameter: string,
   ): Promise<any[]> {
     return this.csvService.getFilteredProduccionFecha(filterParameter);
+  }
+  @Post('ingresar-solicitud')
+  async ingresarSolicitud(
+    @Query('nombre') nombre: string,
+    @Query('rut') rut: string,
+    @Query('correo') correo: string,
+    @Query('mensaje') mensaje: string,
+  ): Promise<boolean> {
+    return this.csvService.ingresarSolicitud(nombre, rut, correo, mensaje);
+  }
+@Post('agregar-usuario')
+  async agregarUsuario(
+    @Query('id') id: string,
+    @Query('nombre') nombre: string,
+    @Query('correo') correo: string,
+    @Query('contraseña') contraseña: string,
+    @Query('rut') rut: string,
+    @Query('role') role: string,
+  ): Promise<boolean> {
+    return this.csvService.agregarUsuario(id, nombre, correo, contraseña, rut, role);
+  }
+@Delete('eliminar-solicitud/:rut')
+  async eliminarSolicitud(rut: string): Promise<void> {
+    return this.csvService.eliminarSolicitud(rut);
+  }
+@Get('datos-perfil')
+  async datosPerfil(
+    @Query('role') role: string,
+    @Query('correo') correo: string,
+  ): Promise<any[]> {
+    return this.csvService.getDatosPerfil(role, correo);
+  }
+@Put('actualizar-perfil')
+  async actualizarPerfil(
+    @Query('id') id: string,
+    @Query('nombre') nombre: string,
+    @Query('rut') rut: string,
+    @Query('correo') correo: string,
+    @Query('contra') contra: string,
+  ): Promise<boolean> {
+    return this.csvService.actualizarPerfil(id, nombre, rut, correo, contra);
+  }
+@Delete('eliminar-usuario/:rut')
+  async eliminarUsuario(rut: string): Promise<void> {
+    return this.csvService.eliminarUsuario(rut);
+  }
+@Put('actualizar-usuario')
+  async actualizarUsuario(
+    @Query('id') id: string,
+    @Query('nombre') nombre: string,
+    @Query('rut') rut: string,
+    @Query('correo') correo: string,
+  ): Promise<boolean> {
+    return this.csvService.actualizarUsuario(id, nombre, rut, correo);
   }
 }

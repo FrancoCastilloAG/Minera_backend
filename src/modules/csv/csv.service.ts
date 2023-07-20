@@ -201,6 +201,86 @@ export class CsvService {
       throw error;
     }
   }
+  async ingresarSolicitud(nombre: string, rut: string, correo: string, mensaje: string): Promise<boolean> {
+    const rutResult = await this.entityManager.query(`
+      SELECT rut FROM users WHERE rut = $1`,
+      [rut]
+    );
+    const correoResult = await this.entityManager.query(`
+      SELECT email FROM users WHERE email = $1`,
+      [correo]
+    );
+
+    if (rutResult.length === 0 && correoResult.length === 0) {
+      await this.entityManager.query(`
+        INSERT INTO solicitudes (nombre, rut, correo, mensaje) VALUES ($1, $2, $3, $4)`,
+        [nombre, rut, correo, mensaje]
+      );
+      return true;
+    } else {
+      return false;
+    }
+  }
+async agregarUsuario(id: string, nombre: string, correo: string, password: string, rut: string, role: string): Promise<boolean> {
+    const rutResult = await this.entityManager.query(`
+      SELECT rut FROM users WHERE rut = $1`,
+      [rut]
+    );
+    const correoResult = await this.entityManager.query(`
+      SELECT email FROM users WHERE email = $1`,
+      [correo]
+    );
+
+    if (rutResult.length === 0 && correoResult.length === 0) {
+      await this.entityManager.query(`
+        INSERT INTO users (id, nombre, rut, email, password, role) VALUES ($1, $2, $3, $4, $5, $6)`,
+        [id, nombre, rut, correo, password, role]
+      );
+      return true;
+    } else {
+      return false;
+    }
+  }
+async eliminarSolicitud(rut: string): Promise<void> {
+    await this.entityManager.query(`
+      DELETE FROM solicitudes WHERE rut = $1`,
+      [rut]
+    );
+  }
+async getDatosPerfil(role: string, correo: string): Promise<any[]> {
+    const auxRole = `${role}%`;
+    const auxCorreo = `${correo}%`;
+    const result = await this.entityManager.query(`
+      SELECT nombre, rut, email, password
+      FROM datosPerfil($1, $2)`,
+      [auxRole, auxCorreo]
+    );
+    return result;
+  }
+async actualizarPerfil(id: string, nombre: string, rut: string, correo: string, contra: string): Promise<boolean> {
+    await this.entityManager.query(`
+      UPDATE users
+      SET nombre = $1, rut = $2, email = $3, password = $4
+      WHERE id = $5`,
+      [nombre, rut, correo, contra, id]
+    );
+    return true;
+  }
+async eliminarUsuario(rut: string): Promise<void> {
+    await this.entityManager.query(`
+      DELETE FROM users WHERE rut = $1`,
+      [rut]
+    );
+  }
+async actualizarUsuario(id: string, nombre: string, rut: string, correo: string): Promise<boolean> {
+    await this.entityManager.query(`
+      UPDATE users
+      SET nombre = $1, rut = $2, email = $3
+      WHERE id = $4`,
+      [nombre, rut, correo, id]
+    );
+    return true;
+  }
 
 }
 
